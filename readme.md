@@ -2,6 +2,12 @@
 
 - Adds markdown buttons at the top of the editor field/box in Zendesk
 
+## IMPORTANT NOTES
+Due to the way Zendesk communicates with the server and sends/receives any updates in the ticket editor textbox, and the fact that this Tampermonkey script is pure front-end, please note the following:
+
+- After using any of the markdown buttons, you will need to manually change anything in the textbox, before sending the ticket, or previewing it. Adding or removing a space anywhere (or any other character) is enough. Without doing that, your changes will not be communicated to the server or saved!
+- The standard UNDO functionality (CMD+Z) will **not** work after using any of the buttons. When you type normally, you can still undo your changes, but as soon as you use a markdown button, the undo history will be empty.
+
 ## REQUIREMENTS:
 
 ### Tampermonkey
