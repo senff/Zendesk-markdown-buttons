@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Zendesk Markdown Buttons
 // @namespace    http://tampermonkey.net/
-// @version      0.91
+// @version      0.95
 // @description  Adds some markdown buttons at the top of the editing field
 // @author       Senff
 // @updateURL    https://github.com/senff/Zendesk-markdown-buttons/raw/master/zendesk-markdown-buttons.user.js
@@ -104,6 +104,7 @@ function addStyle(style,id) {
         $editorBox.val(editorContents);
     }
     $editorBox.trigger('click');
+    $editorBox.keyup();
     $editorBox.selectRange(selectionStart+posAdd, selectionEnd+posAdd);
 }
 
