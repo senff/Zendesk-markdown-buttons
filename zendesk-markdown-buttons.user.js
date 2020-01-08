@@ -1,11 +1,11 @@
 // ==UserScript==
 // @name         Zendesk Markdown Buttons
 // @namespace    http://tampermonkey.net/
-// @version      0.9
+// @version      0.91
 // @description  Adds some markdown buttons at the top of the editing field
 // @author       Senff
 // @updateURL    https://github.com/senff/Zendesk-markdown-buttons/raw/master/zendesk-markdown-buttons.user.js
-// @match        https://woothemes.zendesk.com/agent/tickets/*
+// @match        https://woothemes.zendesk.com/agent/*
 // @grant        none
 // ==/UserScript==
 
@@ -17,10 +17,12 @@ function addMarkdownButtons() {
     }
 
     $('.comment_input textarea').each(function(ind) {
+        console.log('textarea: add some buttons');
         var tID = $(this).attr('id');
+        console.log(tID);
         if (!$(this).hasClass('buttons-added')) {
             $(this).parent().parent().parent().find('.markdown-buttons-row').remove();
-            $(this).parent().parent().parent().find('.hint').after('<div class="markdown-buttons-row" style="padding:10px 0 0 0;font-size: 12px;"><div class="button-group"><button data-style="bold" data-id="'+tID+'" class="markdown-bold button-left" style="font-weight:bold;">B</button><button data-style="italic" data-id="'+tID+'" class="markdown-italic button-middle" style="font-style:italic;">I</button><button data-style="link" data-id="'+tID+'" class="markdown-link button-right" style="text-decoration: underline;">LINK</button></div><div class="button-group"><button data-style="h1" data-id="'+tID+'" class="markdown-h1 button-left" style="font-size: 20px;">H1</button><button data-style="h2" data-id="'+tID+'" class="markdown-h2 button-middle" style="font-size: 16px;">H2</button><button data-style="h3" data-id="'+tID+'" class="markdown-h3 button-right" style="font-size: 12px;">H3</button></div><div class="button-group"><button data-style="line" data-id="'+tID+'" class="markdown-line button-left">---</button><button data-style="inlinecode" data-id="'+tID+'" class="markdown-inlinecode button-middle" style="font-size: 12px; font-family: Consolas, Liberation Mono, Menlo, Bitstream Vera Sans Mono, Courier, monospace;">inline code</button><button data-style="codeblock" data-id="'+tID+'" class="markdown-codeblock button-right" style="font-size: 12px; font-family: Consolas, Liberation Mono, Menlo, Bitstream Vera Sans Mono, Courier, monospace;">CODE BLOCK</button></div><div class="button-group"><button data-id="'+tID+'" class="button-left button-right undo" style="border-right: solid 1px #c0c0c0; display: none;">UNDO</button></div><br style="clear: both;"><div>After using any of these buttons, please make sure to manually add/edit at least one character before previewing/sending!</div></div>');
+            $(this).parent().parent().parent().find('.hint').after('<div class="markdown-buttons-row" style="padding:10px 0 0 0;font-size: 12px;"><div class="button-group"><button data-style="bold" data-id="'+tID+'" class="markdown-bold button-left" style="font-weight:bold;">B</button><button data-style="italic" data-id="'+tID+'" class="markdown-italic button-middle" style="font-style:italic;">I</button><button data-style="link" data-id="'+tID+'" class="markdown-link button-right" style="text-decoration: underline;">LINK</button></div><div class="button-group"><button data-style="h1" data-id="'+tID+'" class="markdown-h1 button-left" style="font-size: 20px;">H1</button><button data-style="h2" data-id="'+tID+'" class="markdown-h2 button-middle" style="font-size: 16px;">H2</button><button data-style="h3" data-id="'+tID+'" class="markdown-h3 button-right" style="font-size: 12px;">H3</button></div><div class="button-group"><button data-style="line" data-id="'+tID+'" class="markdown-line button-left">---</button><button data-style="inlinecode" data-id="'+tID+'" class="markdown-inlinecode button-middle" style="font-size: 12px; font-family: Consolas, Liberation Mono, Menlo, Bitstream Vera Sans Mono, Courier, monospace;">inline code</button><button data-style="codeblock" data-id="'+tID+'" class="markdown-codeblock button-right" style="font-size: 12px; font-family: Consolas, Liberation Mono, Menlo, Bitstream Vera Sans Mono, Courier, monospace;">CODE BLOCK</button></div><div class="button-group"><button data-id="'+tID+'" class="button-left button-right undo" style="border-right: solid 1px #c0c0c0;">UNDO</button></div><br style="clear: both;"><div>After using any of these buttons, please make sure to manually add/edit at least one character before previewing/sending!</div></div>');
             $(this).addClass('buttons-added');
         }
     });
@@ -50,19 +52,19 @@ function addStyle(style,id) {
         if(style=='bold') {
             styleBefore = '**';
             styleAfter = '**';
-            posAdd = 4;
+            posAdd = 2;
         }
         if(style=='italic') {
             styleBefore = '_';
             styleAfter = '_';
-            posAdd = 2;
+            posAdd = 1;
         }
         if(style=='link') {
             var url = prompt("Enter URL", "https://");
             if (url.startsWith("http://") || url.startsWith("https://")) {
                 styleBefore = '**[';
                 styleAfter = ']('+url+')**';
-                posAdd = 8;
+                posAdd = 1;
             }
         }
         if(style=='h1') {
@@ -83,12 +85,12 @@ function addStyle(style,id) {
         if(style=='inlinecode') {
             styleBefore = '`';
             styleAfter = '`';
-            posAdd = 2;
+            posAdd = 1;
         }
         if(style=='codeblock') {
             styleBefore = '\n\n```\n';
             styleAfter = '\n```\n\n';
-            posAdd = 11;
+            posAdd = 6;
         }
         if(style=='line') {
             styleBefore = '\n\n---\n';
@@ -96,12 +98,13 @@ function addStyle(style,id) {
             posAdd = 5;
         }
         var editorCharArray = editorContents.split("");
-        editorCharArray.splice(selectionEnd, 0, styleAfter);
-        editorCharArray.splice(selectionStart, 0, styleBefore); //must do End first
+        editorCharArray.splice(selectionEnd, 0, styleAfter); //must do End first
+        editorCharArray.splice(selectionStart, 0, styleBefore);
         editorContents = editorCharArray.join("");
         $editorBox.val(editorContents);
     }
-    $editorBox.selectRange(selectionEnd+posAdd);
+    $editorBox.trigger('click');
+    $editorBox.selectRange(selectionStart+posAdd, selectionEnd+posAdd);
 }
 
 $.fn.selectRange = function(start, end) {
@@ -135,7 +138,8 @@ $("body").on('click','.undo', function () {
     undoContents(theID);
 });
 
-// Loop to check all editor boxes in all tabs have buttons
+// Loop until textbox is fully loaded
 window.setInterval(function(){
+    console.log('intial loop');
     addMarkdownButtons();
 }, 2500);
