@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Zendesk Markdown Buttons
 // @namespace    http://tampermonkey.net/
-// @version      0.95 rev 2711
+// @version      0.99 rev 2711
 // @description  Adds some markdown buttons at the top of the editing field
 // @author       Senff
 // @updateURL    https://github.com/senff/Zendesk-markdown-buttons/raw/master/zendesk-markdown-buttons.user.js
@@ -18,9 +18,7 @@ function addMarkdownButtons() {
     }
 
     $('.comment_input textarea').each(function(ind) {
-        console.log('textarea: add some buttons');
         var tID = $(this).attr('id');
-        console.log(tID);
         if (!$(this).hasClass('buttons-added')) {
             $(this).parent().parent().parent().find('.markdown-buttons-row').remove();
             $(this).parent().parent().parent().find('.hint').after('<div class="markdown-buttons-row" style="padding:10px 0 0 0;margin-bottom: -5px; font-size: 12px; overflow: hidden;"><div class="button-group"><button data-style="bold" data-id="'+tID+'" class="markdown-bold button-left" style="font-weight:bold;">B</button><button data-style="italic" data-id="'+tID+'" class="markdown-italic button-middle" style="font-style:italic;">I</button><button data-style="link" data-id="'+tID+'" class="markdown-link button-right" style="text-decoration: underline;">LINK</button></div><div class="button-group"><button data-style="h1" data-id="'+tID+'" class="markdown-h1 button-left" style="font-size: 20px;">H1</button><button data-style="h2" data-id="'+tID+'" class="markdown-h2 button-middle" style="font-size: 16px;">H2</button><button data-style="h3" data-id="'+tID+'" class="markdown-h3 button-right" style="font-size: 12px;">H3</button></div><div class="button-group"><button data-style="line" data-id="'+tID+'" class="markdown-line button-left">---</button><button data-style="inlinecode" data-id="'+tID+'" class="markdown-inlinecode button-middle" style="font-size: 12px; font-family: Consolas, Liberation Mono, Menlo, Bitstream Vera Sans Mono, Courier, monospace;">inline code</button><button data-style="codeblock" data-id="'+tID+'" class="markdown-codeblock button-right" style="font-size: 12px; font-family: Consolas, Liberation Mono, Menlo, Bitstream Vera Sans Mono, Courier, monospace;">CODE BLOCK</button></div></div>');
@@ -48,6 +46,7 @@ function addStyle(style,id) {
     if (editor.selectionStart) selectionStart = editor.selectionStart;
     if (editor.selectionEnd) selectionEnd = editor.selectionEnd;
     var posAdd = 0;
+    var posEnd = 0;
 
     if ((selectionStart == selectionEnd) && (style=='link')) {
         alert('Highlight the text that you want to make a link');
@@ -67,7 +66,8 @@ function addStyle(style,id) {
             if (url.startsWith("http://") || url.startsWith("https://")) {
                 styleBefore = '**[';
                 styleAfter = ']('+url+')**';
-                posAdd = 1;
+                posAdd = 2;
+                posEnd = url.length+6;
             }
         }
         if(style=='h1') {
@@ -108,7 +108,11 @@ function addStyle(style,id) {
     }
     $editorBox.trigger('click');
     $editorBox.keyup();
-    $editorBox.selectRange(selectionStart+posAdd, selectionEnd+posAdd);
+    if (posEnd == 0) {
+        $editorBox.selectRange(selectionStart+posAdd, selectionEnd+posAdd);
+    } else {
+        $editorBox.selectRange(selectionStart+posAdd, selectionEnd+posEnd);
+    }
 }
 
 // Select text that was originally selected
